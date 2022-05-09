@@ -2,13 +2,17 @@ class TicTacToe
   def initialize
     print 'Enter board size: '
     @board_size = gets.chomp.to_i
+    print 'Enter cell symbol: '
+    @cell_symbol = gets.chomp
     print 'Enter X symbol: '
     @x_symbol = gets.chomp
     print 'Enter O symbol: '
     @o_symbol = gets.chomp
-    @board_state = Array.new(@board_size) { Array.new(@board_size, '-') }
+    @cell_symbol = '-' if @cell_symbol.empty?
     @x_symbol = 'X' if @x_symbol.empty?
     @o_symbol = 'O' if @o_symbol.empty?
+    @board_state =
+      Array.new(@board_size) { Array.new(@board_size, @cell_symbol) }
     @player = @x_symbol.dup
   end
 
@@ -17,6 +21,10 @@ class TicTacToe
     puts 'Tic Tac Toe'
     puts
     until winning_position?
+      if draw?
+        puts 'Draw!'
+        return
+      end
       display_board
       puts "#{@player} moves ->"
       x, y = get_user_input
@@ -36,7 +44,7 @@ class TicTacToe
   end
 
   def legal_move?(x, y)
-    @board_state[@board_state.size - y][x - 1] == '-' &&
+    @board_state[@board_state.size - y][x - 1] == @cell_symbol &&
       x <= @board_state[0].size && y <= @board_state.size
   end
 
@@ -93,6 +101,10 @@ class TicTacToe
     possible_winning_positions.any? do |line|
       [@x_symbol * @board_size, @o_symbol * @board_size].include? line.join
     end
+  end
+
+  def draw?
+    @board_state.all? { |row| row.none? { |cell| cell == @cell_symbol } }
   end
 end
 
